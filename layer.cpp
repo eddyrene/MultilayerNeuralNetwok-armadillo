@@ -90,6 +90,16 @@ void Layer::update(int a, int b)
 {
     mfil=a; mcol=b;
     pMat = new mat(mfil,mcol,fill::randu);
+    double w;
+    double li=-0.001;
+    double ls=0.001;
+    arma::mat::iterator it_end = pMat->end();
+	for(auto &val : *pMat)
+    {
+        val=li + static_cast <double> (rand()) /( static_cast <double> (RAND_MAX/(ls-li)));
+        //std::cout << val << std::endl;
+    }
+    //pMat[i][j]=li + static_cast <double> (rand()) /( static_cast <double> (RAND_MAX/(ls-li)));
 }
 
 mat *Layer::getMatError()
