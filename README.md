@@ -1,0 +1,2 @@
+# MultilayerNeuralNetwok-armadillo
+proyecto simple
