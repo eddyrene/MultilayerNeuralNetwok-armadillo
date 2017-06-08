@@ -47,7 +47,7 @@ Network::Network(int capas, int entradas, vector<int> ocultas, int salidas)
     VectOrders.push_back(numEntradas);
     //capas intermedias
     vectOcultas=ocultas;
-    for(auto a :vectOcultas )
+    for(std::vector<int>::iterator a :vectOcultas )
     {
         a++;  cout<<"vectOcultas"<<a<<endl;
     }
@@ -135,7 +135,7 @@ void Network::init2(vector<double> input, double expected, double err)
 void Network::printVector(string a, vector<double> t)
 {
     cout<<a;
-    for(auto y : t)
+    for(std::vector<double>::iterator y : t)
         cout<<" "<<y;
 }
 
@@ -200,7 +200,7 @@ void Network::forward2()
 
     int pos =vectLayer->size()-1;
     cout<<"\n  imprimiendo salida \n "<<endl;
-    for(auto k : *(vectLayer->at(pos)->getVectNeuron()))
+    for(std::vector<*Neuron>::iterator k : *(vectLayer->at(pos)->getVectNeuron()))
     {
         cout<<k->getVal()<<" ";
     }
@@ -348,7 +348,7 @@ bool Network::testSet(vector<double>  I, vector<double> O)
     delete r;
 }
 
-void Network::loadDataNumbers(string name, int a, vector< vector<double >> &training, vector< vector<double >> &test)
+void Network::loadDataNumbers(string name, int a, vector< vector<double > > &training, vector< vector<double > > &test)
 {
     training.resize(a);
     for(int i = 0 ; i< a ;i++)
@@ -419,7 +419,7 @@ void Network::loadDataFlowers(string name, int Es, vector<vector<double> > &trai
     int m=0;
     while(!file.eof())
     {
-        file>>e1>>e2>>e3>>e4>>s1;
+        file> >e1> >e2> >e3> >e4> >s1;
         if(s1=="") break;
         training[m][0]= e1;
         training[m][1]= e2;

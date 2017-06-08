@@ -19,7 +19,7 @@
 
         Network * my_net = new Network(4,4,hidden,3);
         my_net->printVector("imprimiendo pesos", my_net->getVectorOrders());
-        vector< vector<double >> inputs, outputs, IN;
+        vector< vector<double > > inputs, outputs, IN;
         int Es=120;
         my_net->loadDataFlowers("irisTraining.txt", Es, inputs, outputs);
         my_net->normalize(IN, inputs);
@@ -64,7 +64,7 @@
         cout<<"*********acumulado MENOR AL FLAG **** \n "<<sum<<endl;
         cout<<"%%%%%%%%%%%%%%%%%% TEST %%%%%%%%%%%%%%"<<endl;
         int Test =30;
-        vector< vector<double >> I, O, NIT;
+        vector< vector<double > > I, O, NIT;
         my_net->loadDataFlowers("irisTest.txt", Test, I, O);
         my_net->normalize(NIT, I);
         //my_net->printMat("\n Entrada: \n", NIT);
