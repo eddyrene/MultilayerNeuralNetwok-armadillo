@@ -47,7 +47,7 @@ Network::Network(int capas, int entradas, vector<int> ocultas, int salidas)
     VectOrders.push_back(numEntradas);
     //capas intermedias
     vectOcultas=ocultas;
-    for(std::vector<int>::iterator a :vectOcultas )
+    for(auto a :vectOcultas )
     {
         a++;  cout<<"vectOcultas"<<a<<endl;
     }
@@ -135,7 +135,7 @@ void Network::init2(vector<double> input, double expected, double err)
 void Network::printVector(string a, vector<double> t)
 {
     cout<<a;
-    for(std::vector<double>::iterator y : t)
+    for(auto y : t)
         cout<<" "<<y;
 }
 
@@ -160,14 +160,18 @@ void Network::forward()
         {
             matrixtoVectNeuron(r,vectLayer->at(i)->getVectNeuron());
             vectLayer->at(i)->sigmod();
+            delete r;
         }
         mat * neu=  vectNeurontoMatrix( vectLayer->at(i)->getVectNeuron());
         mat * wght =  vectLayer->at(i)->getMat();
         //cout<<"i ones \n"<<*wght<<endl;
        // cout<<"dimensiones A \n"<<neu->n_rows<<" "<<neu->n_cols<<endl;
        // cout<<"dimensiones B \n"<<wght->n_rows<<" "<<wght->n_cols<<endl;
-        r = new mat((*neu)*(*wght));delete neu;
+        r = new mat((*neu)*(*wght));
        // cout<<"\nla entrada \n "<<*neu<<"\n los pesos \n "<<*wght<<"\n resultado \n "<<*r<<endl;
+       //cout<<"\n los pesos \n "<<*wght<<endl;
+        delete neu;
+
     }
     matrixtoVectNeuron(r,vectLayer->at(vectLayer->size()-1)->getVectNeuron());
     vectLayer->at(vectLayer->size()-1)->sigmod();
@@ -190,7 +194,7 @@ void Network::forward2()
        // cout<<"dimensiones A \n"<<neu->n_rows<<" "<<neu->n_cols<<endl;
        // cout<<"dimensiones B \n"<<wght->n_rows<<" "<<wght->n_cols<<endl;
         r = new mat((*neu)*(*wght));delete neu;
-      //  cout<<"\nla entrada \n "<<*neu<<"\n los pesos \n "<<*wght<<"\n resultado \n "<<*r<<endl;
+        //cout<<"\nla entrada \n "<<*neu<<"\n los pesos \n "<<*wght<<"\n resultado \n "<<*r<<endl;
         //cout<<"\n resultado \n"<<*r<<endl;
     }
     matrixtoVectNeuron(r,vectLayer->at(vectLayer->size()-1)->getVectNeuron());
@@ -200,7 +204,7 @@ void Network::forward2()
 
     int pos =vectLayer->size()-1;
     cout<<"\n  imprimiendo salida \n "<<endl;
-    for(std::vector<*Neuron>::iterator k : *(vectLayer->at(pos)->getVectNeuron()))
+    for(auto k : *(vectLayer->at(pos)->getVectNeuron()))
     {
         cout<<k->getVal()<<" ";
     }
@@ -338,17 +342,18 @@ bool Network::testSet(vector<double>  I, vector<double> O)
     for(int j =1; j< vectLayer->at(pos)->getVectNeuron()->size() ; j++)
     {
         cout<<vectLayer->at(pos)->getVectNeuron()->at(j)->getVal()<<" ";
-        if(round((vectLayer->at(pos)->getVectNeuron()->at(j)->getVal()))== Y.at(j-1));
+        if(round((vectLayer->at(pos)->getVectNeuron()->at(j)->getVal()))== Y.at(j-1))
             correctos++;
     }
-
-    printVector("     Esperado     ",Y);
-    if(correctos==3) return true;
-    else return false;
+    printVector("Esperado",Y);
+    cout<<"correctos x capa "<<correctos<<endl;
+    if(correctos==vectLayer->at(pos)->getVectNeuron()->size()-1) return true;
+    else
+        return false;
     delete r;
 }
 
-void Network::loadDataNumbers(string name, int a, vector< vector<double > > &training, vector< vector<double > > &test)
+void Network::loadDataNumbers(string name, int a, vector< vector<double >> &training, vector< vector<double >> &test)
 {
     training.resize(a);
     for(int i = 0 ; i< a ;i++)
@@ -419,7 +424,7 @@ void Network::loadDataFlowers(string name, int Es, vector<vector<double> > &trai
     int m=0;
     while(!file.eof())
     {
-        file> >e1> >e2> >e3> >e4> >s1;
+        file>>e1>>e2>>e3>>e4>>s1;
         if(s1=="") break;
         training[m][0]= e1;
         training[m][1]= e2;
