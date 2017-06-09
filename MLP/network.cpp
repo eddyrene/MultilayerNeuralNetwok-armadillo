@@ -276,6 +276,26 @@ void Network::backpropagation()
     }
 }
 
+bool  Network::isCorrect()
+{
+    int pos =vectLayer->size()-1;
+    //vectLayer->at(pos)->sigmod();
+   // cout<<"\n  imprimiendo salida \n "<<endl;
+    //cout<<"\n";
+    int correctos=0;
+    for(int j =1; j< vectLayer->at(pos)->getVectNeuron()->size() ; j++)
+    {
+        //cout<<vectLayer->at(pos)->getVectNeuron()->at(j)->getVal()<<" ";
+        if(round((vectLayer->at(pos)->getVectNeuron()->at(j)->getVal()))== Y.at(j-1))
+            correctos++;
+    }
+    //printVector("Esperado",Y);
+    //cout<<"correctos x capa "<<correctos<<endl;
+    if(correctos==vectLayer->at(pos)->getVectNeuron()->size()-1) return true;
+    else
+        return false;
+}
+
 void Network::createWeights()
 {
     for(int i=0 ; i<vectLayer->size()-1 ; i++ )

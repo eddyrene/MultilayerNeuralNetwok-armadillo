@@ -16,7 +16,7 @@
         //vector<int> hidden; hidden.push_back(6);hidden.push_back(8);
         vector<int> hidden; hidden.push_back(25);
         //Network * my_net = new Network(3,4,8,3);
-
+        //g++ -std=c++11 network.h network.cpp neuron.h neuron.cpp layer.h layer.cpp main.cpp -O2 -I /home/amamani/unsa/eddy/armadillo-7.950.0/include -DARMA_DONT_USE_WRAPPER -lopenblas -llapack
         Network * my_net = new Network(3,784,hidden,10);
         my_net->printVector("imprimiendo pesos", my_net->getVectorOrders());
         vector< vector<double >> inputs, outputs, IN;
@@ -28,14 +28,17 @@
         int times=0;
         bool flag =true;
         double sum;
-        while((flag==true) && (times <5000))
+
+        while((flag==true) && (times <10))
         {
             cout<<"###########################"<< times <<"#################################"""<<endl;
             FinalErrors.clear();
             int era=0;
             double delta=1000;
+            int accTrainig=0;
             for(int i=0 ;i<Es; i++)
             {
+
                 double t=0.00001;
                 my_net->init(IN[i],outputs[i], t);
                 //cout<<"entrada:  "<< i << "   ****  era ***  "<<era<<endl;
@@ -45,6 +48,7 @@
                 if(delta>0.000001)
                     my_net->backpropagation();
                 //my_net->forward();
+                if(my_net->isCorrect()) accTrainig++;
                 FinalErrors.push_back(delta);
                 era++;
             }
@@ -59,6 +63,7 @@
             if(sum < 0.001)
                 flag=false;
             cout<<"*********acumulado MENOR AL FLAG **** \n "<<sum<<endl;
+            cout<<"num de correctos entrenamiento    "<<accTrainig<<endl;
             times++;
        }
         cout<<"*********acumulado MENOR AL FLAG **** \n "<<sum<<endl;

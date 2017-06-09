@@ -21,6 +21,7 @@ public:
     Network(int capas, int entradas, int ocultas,  int salida );
     Network(int capas, int entradas, vector<int> ocultas,  int salida );
     void fill();
+    bool isCorrect();
     void init(vector<double> input, vector<double> expected , double err);
     void init2(vector<double> input, double expected , double err);
     mat * derVectNeuron(vector<Neuron *> * v );

@@ -1,0 +1,28 @@
+# depslib dependency file v1.0
+1496935414 source:/home/mica/Desktop/TopIA/MLP/layer.cpp
+	"layer.h"
+
+1496929614 /home/mica/Desktop/TopIA/MLP/layer.h
+	"neuron.h"
+	<vector>
+
+1496929617 /home/mica/Desktop/TopIA/MLP/neuron.h
+	<armadillo>
+	<iostream>
+
+1497031569 source:/home/mica/Desktop/TopIA/MLP/main.cpp
+	"network.h"
+	<armadillo>
+	<algorithm>
+
+1497031120 /home/mica/Desktop/TopIA/MLP/network.h
+	"layer.h"
+	<cmath>
+	<cstdio>
+
+1496936582 source:/home/mica/Desktop/TopIA/MLP/network.cpp
+	"network.h"
+
+1496929617 source:/home/mica/Desktop/TopIA/MLP/neuron.cpp
+	"neuron.h"
+
