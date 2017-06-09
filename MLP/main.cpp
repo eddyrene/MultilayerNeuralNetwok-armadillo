@@ -2,6 +2,7 @@
     #include <armadillo>
     #include <algorithm>
     #include <ctime>
+    #include "ctime"
     using namespace arma;
     using namespace std;
 
@@ -21,7 +22,7 @@
         Network * my_net = new Network(3,784,hidden,10);
         my_net->printVector("imprimiendo pesos", my_net->getVectorOrders());
         vector< vector<double >> inputs, outputs, IN;
-        int Es=60000;
+        int Es=6000;
         //my_net->loadDataNumbers("/home/mica/Desktop/TopIA/mnistdataset/mnist_train_100.csv", Es, IN, outputs);
         my_net->loadDataNumbers("../../mnist_train.csv", Es, IN, outputs);
         //my_net->printMat("emtrada",IN);
@@ -31,9 +32,12 @@
         double sum;
 	double accTraining;
 	srand (time(NULL));
-        clock_t ini, fin;
-        ini = clock();
-        while((flag==true) && (times <2500))
+
+         struct timespec start, finish;
+        double elapsed;
+
+        clock_gettime(CLOCK_MONOTONIC, &start);
+        while((flag==true) && (times <100))
         {
            // cout<<"###########################"<< times <<"#################################"""<<endl;
             FinalErrors.clear();
@@ -70,9 +74,11 @@
             //cout<<"num de correctos entrenamiento    "<<accTraining<<endl;
             times++;
        }
-       fin=clock();
-       double totalt= ((double)(ini-fin))/CLOCKS_PER_SEC;
-       cout<<"Tiempo de aprendizaje "<< t/60<<<<"minutos"<<endl;
+        clock_gettime(CLOCK_MONOTONIC, &finish);
+        elapsed = (finish.tv_sec - start.tv_sec);
+        elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
+        cout<<"tiempo de ejecucion "<<elapsed<<endl;
+
 	   cout<<"Acuraccy Trainig"<<accTraining<<endl;
         cout<<"*********acumulado MENOR AL FLAG **** \n "<<sum<<endl;
         cout<<"%%%%%%%%%%%%%%%%%% TEST %%%%%%%%%%%%%%"<<endl;
