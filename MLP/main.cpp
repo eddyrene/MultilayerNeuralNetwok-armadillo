@@ -1,7 +1,7 @@
     #include "network.h"
     #include <armadillo>
     #include <algorithm>
-
+    #include <ctime>
     using namespace arma;
     using namespace std;
 
@@ -31,6 +31,8 @@
         double sum;
 	double accTraining;
 	srand (time(NULL));
+        clock_t ini, fin;
+        ini = clock();
         while((flag==true) && (times <2500))
         {
            // cout<<"###########################"<< times <<"#################################"""<<endl;
@@ -68,7 +70,10 @@
             //cout<<"num de correctos entrenamiento    "<<accTraining<<endl;
             times++;
        }
-	cout<<"Acuraccy Trainig"<<accTraining<<endl;
+       fin=clock();
+       double totalt= ((double)(ini-fin))/CLOCKS_PER_SEC;
+       cout<<"Tiempo de aprendizaje "<< t/60<<<<"minutos"<<endl;
+	   cout<<"Acuraccy Trainig"<<accTraining<<endl;
         cout<<"*********acumulado MENOR AL FLAG **** \n "<<sum<<endl;
         cout<<"%%%%%%%%%%%%%%%%%% TEST %%%%%%%%%%%%%%"<<endl;
         int Test =10000;
