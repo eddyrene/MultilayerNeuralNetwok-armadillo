@@ -2,7 +2,9 @@
     #include <armadillo>
     #include <algorithm>
     #include <ctime>
-    #include "ctime"
+	   #include <ctype.h>
+//#include <conio.h>   
+ #include "ctime"
     using namespace arma;
     using namespace std;
 
@@ -16,13 +18,13 @@
         //vector<int> hidden; hidden.push_back(4);hidden.push_back(6);
         //vector<int> hidden; hidden.push_back(6);hidden.push_back(8);
         srand (time(NULL));
-	 vector<int> hidden; hidden.push_back(25);
+	 vector<int> hidden; hidden.push_back(30);
         //Network * my_net = new Network(3,4,8,3);
         //g++ -std=c++11 network.h network.cpp neuron.h neuron.cpp layer.h layer.cpp main.cpp -O2 -I /home/amamani/unsa/eddy/armadillo-7.950.0/include -DARMA_DONT_USE_WRAPPER -lopenblas -llapack
         Network * my_net = new Network(3,784,hidden,10);
         my_net->printVector("imprimiendo pesos", my_net->getVectorOrders());
         vector< vector<double >> inputs, outputs, IN;
-        int Es=6000;
+        int Es=60000;
         //my_net->loadDataNumbers("/home/mica/Desktop/TopIA/mnistdataset/mnist_train_100.csv", Es, IN, outputs);
         my_net->loadDataNumbers("../../mnist_train.csv", Es, IN, outputs);
         //my_net->printMat("emtrada",IN);
@@ -35,11 +37,11 @@
 
          struct timespec start, finish;
         double elapsed;
-
+	//int key= _getcha();
         clock_gettime(CLOCK_MONOTONIC, &start);
-        while((flag==true) && (times <100))
+        while((flag==true) && (times <3000) && cin.get() != 'f' )
         {
-           // cout<<"###########################"<< times <<"#################################"""<<endl;
+           cout<<"###########################"<< times <<"#################################"""<<endl;
             FinalErrors.clear();
             int era=0;
             double delta=1000;
@@ -70,14 +72,15 @@
             sum = sum / FinalErrors.size();
             if(sum < 0.001)
                 flag=false;
-            //cout<<"*********acumulado MENOR AL FLAG **** \n "<<sum<<endl;
+           cout<<"*********acumulado MENOR AL FLAG **** \n "<<sum<<endl;
             //cout<<"num de correctos entrenamiento    "<<accTraining<<endl;
             times++;
+	//	key= _getcha();	
        }
         clock_gettime(CLOCK_MONOTONIC, &finish);
         elapsed = (finish.tv_sec - start.tv_sec);
         elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
-        cout<<"tiempo de ejecucion "<<elapsed<<endl;
+        cout<<"tiempo de ejecucion "<<elapsed/60<<endl;
 
 	   cout<<"Acuraccy Trainig"<<accTraining<<endl;
         cout<<"*********acumulado MENOR AL FLAG **** \n "<<sum<<endl;
