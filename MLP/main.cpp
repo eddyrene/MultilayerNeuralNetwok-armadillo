@@ -14,7 +14,8 @@
         //vector<int> hidden; hidden.push_back(3);hidden.push_back(5);
         //vector<int> hidden; hidden.push_back(4);hidden.push_back(6);
         //vector<int> hidden; hidden.push_back(6);hidden.push_back(8);
-        vector<int> hidden; hidden.push_back(25);
+        srand (time(NULL));
+	 vector<int> hidden; hidden.push_back(25);
         //Network * my_net = new Network(3,4,8,3);
         //g++ -std=c++11 network.h network.cpp neuron.h neuron.cpp layer.h layer.cpp main.cpp -O2 -I /home/amamani/unsa/eddy/armadillo-7.950.0/include -DARMA_DONT_USE_WRAPPER -lopenblas -llapack
         Network * my_net = new Network(3,784,hidden,10);
@@ -22,20 +23,21 @@
         vector< vector<double >> inputs, outputs, IN;
         int Es=60000;
         //my_net->loadDataNumbers("/home/mica/Desktop/TopIA/mnistdataset/mnist_train_100.csv", Es, IN, outputs);
-        my_net->loadDataNumbers("/home/mica/Desktop/TopIA/mnistdataset/mnist_train.csv", Es, IN, outputs);
+        my_net->loadDataNumbers("../../mnist_train.csv", Es, IN, outputs);
         //my_net->printMat("emtrada",IN);
         vector<double> FinalErrors;
         int times=0;
         bool flag =true;
         double sum;
-
-        while((flag==true) && (times <10))
+	double accTraining;
+	srand (time(NULL));
+        while((flag==true) && (times <2500))
         {
-            cout<<"###########################"<< times <<"#################################"""<<endl;
+           // cout<<"###########################"<< times <<"#################################"""<<endl;
             FinalErrors.clear();
             int era=0;
             double delta=1000;
-            int accTrainig=0;
+	    accTraining=0;
             for(int i=0 ;i<Es; i++)
             {
 
@@ -48,7 +50,7 @@
                 if(delta>0.000001)
                     my_net->backpropagation();
                 //my_net->forward();
-                if(my_net->isCorrect()) accTrainig++;
+                if(my_net->isCorrect()) accTraining++;
                 FinalErrors.push_back(delta);
                 era++;
             }
@@ -62,16 +64,17 @@
             sum = sum / FinalErrors.size();
             if(sum < 0.001)
                 flag=false;
-            cout<<"*********acumulado MENOR AL FLAG **** \n "<<sum<<endl;
-            cout<<"num de correctos entrenamiento    "<<accTrainig<<endl;
+            //cout<<"*********acumulado MENOR AL FLAG **** \n "<<sum<<endl;
+            //cout<<"num de correctos entrenamiento    "<<accTraining<<endl;
             times++;
        }
+	cout<<"Acuraccy Trainig"<<accTraining<<endl;
         cout<<"*********acumulado MENOR AL FLAG **** \n "<<sum<<endl;
         cout<<"%%%%%%%%%%%%%%%%%% TEST %%%%%%%%%%%%%%"<<endl;
         int Test =10000;
         vector< vector<double >> I, O, NIT;
         //my_net->loadDataNumbers("/home/mica/Desktop/TopIA/mnistdataset/mnist_test_10.csv", Test, NIT, O);
-        my_net->loadDataNumbers("/home/mica/Desktop/TopIA/mnistdataset/mnist_test.csv", Test, NIT, O);
+        my_net->loadDataNumbers("../../mnist_test.csv", Test, NIT, O);
         //my_net->printMat("\n Entrada: \n", NIT);
         //my_net->printMat("\n Salidas: \n", O);
         int total_acierto=0;

@@ -357,16 +357,16 @@ bool Network::testSet(vector<double>  I, vector<double> O)
     int pos =vectLayer->size()-1;
     vectLayer->at(pos)->sigmod();
    // cout<<"\n  imprimiendo salida \n "<<endl;
-    cout<<"\n";
+   // cout<<"\n";
     int correctos=0;
     for(int j =1; j< vectLayer->at(pos)->getVectNeuron()->size() ; j++)
     {
-        cout<<vectLayer->at(pos)->getVectNeuron()->at(j)->getVal()<<" ";
+   //     cout<<vectLayer->at(pos)->getVectNeuron()->at(j)->getVal()<<" ";
         if(round((vectLayer->at(pos)->getVectNeuron()->at(j)->getVal()))== Y.at(j-1))
             correctos++;
     }
-    printVector("Esperado",Y);
-    cout<<"correctos x capa "<<correctos<<endl;
+ //   printVector("Esperado",Y);
+   // cout<<"correctos x capa "<<correctos<<endl;
     if(correctos==vectLayer->at(pos)->getVectNeuron()->size()-1) return true;
     else
         return false;
