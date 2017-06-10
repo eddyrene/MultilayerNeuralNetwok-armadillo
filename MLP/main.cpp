@@ -2,12 +2,56 @@
     #include <armadillo>
     #include <algorithm>
     #include <ctime>
-	   #include <ctype.h>
-//#include <conio.h>   
- #include "ctime"
+    #include <ctype.h>
+    #include "ctime"
+    #include <stdlib.h>
+    #include <string.h>
+    #include <unistd.h>
+    #include <sys/select.h>
+    #include <termios.h>
     using namespace arma;
     using namespace std;
 
+    struct termios orig_termios;
+
+void reset_terminal_mode()
+{
+    tcsetattr(0, TCSANOW, &orig_termios);
+}
+
+void set_conio_terminal_mode()
+{
+    struct termios new_termios;
+
+    /* take two copies - one for now, one for later */
+    tcgetattr(0, &orig_termios);
+    memcpy(&new_termios, &orig_termios, sizeof(new_termios));
+
+    /* register cleanup handler, and set the new terminal mode */
+    atexit(reset_terminal_mode);
+    cfmakeraw(&new_termios);
+    tcsetattr(0, TCSANOW, &new_termios);
+}
+
+int kbhit()
+{
+    struct timeval tv = { 0L, 0L };
+    fd_set fds;
+    FD_ZERO(&fds);
+    FD_SET(0, &fds);
+    return select(1, &fds, NULL, NULL, &tv);
+}
+
+int getch()
+{
+    int r;
+    unsigned char c;
+    if ((r = read(0, &c, sizeof(c))) < 0) {
+        return r;
+    } else {
+        return c;
+    }
+}
     int main()
     {
         //vector<int> hidden; hidden.push_back(3);
@@ -18,43 +62,43 @@
         //vector<int> hidden; hidden.push_back(4);hidden.push_back(6);
         //vector<int> hidden; hidden.push_back(6);hidden.push_back(8);
         srand (time(NULL));
-	 vector<int> hidden; hidden.push_back(30);
+        vector<int> hidden; hidden.push_back(100);
         //Network * my_net = new Network(3,4,8,3);
         //g++ -std=c++11 network.h network.cpp neuron.h neuron.cpp layer.h layer.cpp main.cpp -O2 -I /home/amamani/unsa/eddy/armadillo-7.950.0/include -DARMA_DONT_USE_WRAPPER -lopenblas -llapack
         Network * my_net = new Network(3,784,hidden,10);
         my_net->printVector("imprimiendo pesos", my_net->getVectorOrders());
         vector< vector<double >> inputs, outputs, IN;
-        int Es=60000;
-        //my_net->loadDataNumbers("/home/mica/Desktop/TopIA/mnistdataset/mnist_train_100.csv", Es, IN, outputs);
-        my_net->loadDataNumbers("../../mnist_train.csv", Es, IN, outputs);
+        int Es=100;
+        my_net->loadDataNumbers("/home/mica/Desktop/TopIA/mnistdataset/mnist_train_100.csv", Es, IN, outputs);
+        //my_net->loadDataNumbers("../../mnist_train.csv", Es, IN, outputs);
         //my_net->printMat("emtrada",IN);
         vector<double> FinalErrors;
         int times=0;
         bool flag =true;
         double sum;
-	double accTraining;
-	srand (time(NULL));
+        double accTraining;
+        srand (time(NULL));
 
-         struct timespec start, finish;
+        struct timespec start, finish;
         double elapsed;
-	//int key= _getcha();
         clock_gettime(CLOCK_MONOTONIC, &start);
-        while((flag==true) && (times <3000) && cin.get() != 'f' )
+        set_conio_terminal_mode();
+        while((flag==true) && (times <30000) && !kbhit() )
         {
+           // reset_terminal_mode();
            cout<<"###########################"<< times <<"#################################"""<<endl;
+           //fflush(stdout);
             FinalErrors.clear();
             int era=0;
             double delta=1000;
-	    accTraining=0;
+            accTraining=0;
             for(int i=0 ;i<Es; i++)
             {
-
                 double t=0.00001;
                 my_net->init(IN[i],outputs[i], t);
                 //cout<<"entrada:  "<< i << "   ****  era ***  "<<era<<endl;
                 my_net->forward();
                 delta=my_net->sumSquareError();
-                //cout<<"SumsquareError de la capa:"<<delta<<endl;
                 if(delta>0.000001)
                     my_net->backpropagation();
                 //my_net->forward();
@@ -65,18 +109,18 @@
             sum=0;
             for(int qw =0; qw<FinalErrors.size();qw++)
             {
-                // cout<<"  -  "<<FinalErrors[qw]<<endl;
                 sum+=FinalErrors[qw];
             }
-            //cout<<" solo la sumatoria  "<< sum <<" El tamño del vector"<<FinalErrors.size()<<endl;
             sum = sum / FinalErrors.size();
             if(sum < 0.001)
                 flag=false;
            cout<<"*********acumulado MENOR AL FLAG **** \n "<<sum<<endl;
+           // setvbuf(stdout, (char *)NULL, _IOLBF, 0);
+           reset_terminal_mode();
             //cout<<"num de correctos entrenamiento    "<<accTraining<<endl;
             times++;
-	//	key= _getcha();	
        }
+       (void)getch();
         clock_gettime(CLOCK_MONOTONIC, &finish);
         elapsed = (finish.tv_sec - start.tv_sec);
         elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
@@ -85,10 +129,10 @@
 	   cout<<"Acuraccy Trainig"<<accTraining<<endl;
         cout<<"*********acumulado MENOR AL FLAG **** \n "<<sum<<endl;
         cout<<"%%%%%%%%%%%%%%%%%% TEST %%%%%%%%%%%%%%"<<endl;
-        int Test =10000;
+        int Test =10;
         vector< vector<double >> I, O, NIT;
-        //my_net->loadDataNumbers("/home/mica/Desktop/TopIA/mnistdataset/mnist_test_10.csv", Test, NIT, O);
-        my_net->loadDataNumbers("../../mnist_test.csv", Test, NIT, O);
+        my_net->loadDataNumbers("/home/mica/Desktop/TopIA/mnistdataset/mnist_test_10.csv", Test, NIT, O);
+        //my_net->loadDataNumbers("../../mnist_test.csv", Test, NIT, O);
         //my_net->printMat("\n Entrada: \n", NIT);
         //my_net->printMat("\n Salidas: \n", O);
         int total_acierto=0;
@@ -99,6 +143,7 @@
                total_acierto++;
         }
         cout<<"\n \n Aciertos \n "<<total_acierto<<endl;
+
     }
         /*
         Network * my_net = new Network(3,2,2,1); // numcapas, numInput, numHidden, numOutput
