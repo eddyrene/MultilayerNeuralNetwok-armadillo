@@ -13,6 +13,7 @@ private:
     vector<int> vectOcultas;
     vector<double> VectOrders;
     vector<double> Y;
+    vector<mat* > Fweights;
     //vector<vector<double> > Y;
     double threshold;
     double ratioL;
@@ -30,6 +31,7 @@ public:
     void forward();
     void forward2();
     void backpropagation();
+    void backpropagationMomentum();
     void createWeights();
     void printAll();
     vector<double> getVectorOrders();

@@ -62,7 +62,7 @@ int getch()
         //vector<int> hidden; hidden.push_back(4);hidden.push_back(6);
         //vector<int> hidden; hidden.push_back(6);hidden.push_back(8);
         srand (time(NULL));
-        vector<int> hidden; hidden.push_back(100);
+        vector<int> hidden; hidden.push_back(25);
         //Network * my_net = new Network(3,4,8,3);
         //g++ -std=c++11 network.h network.cpp neuron.h neuron.cpp layer.h layer.cpp main.cpp -O2 -I /home/amamani/unsa/eddy/armadillo-7.950.0/include -DARMA_DONT_USE_WRAPPER -lopenblas -llapack
         Network * my_net = new Network(3,784,hidden,10);
@@ -70,6 +70,7 @@ int getch()
         vector< vector<double >> inputs, outputs, IN;
         int Es=100;
         my_net->loadDataNumbers("/home/mica/Desktop/TopIA/mnistdataset/mnist_train_100.csv", Es, IN, outputs);
+        //my_net->loadDataNumbers("/home/mica/Desktop/TopIA/mnistdataset/mnist_train.csv", Es, IN, outputs);
         //my_net->loadDataNumbers("../../mnist_train.csv", Es, IN, outputs);
         //my_net->printMat("emtrada",IN);
         vector<double> FinalErrors;
@@ -78,12 +79,12 @@ int getch()
         double sum;
         double accTraining;
         srand (time(NULL));
-
         struct timespec start, finish;
         double elapsed;
         clock_gettime(CLOCK_MONOTONIC, &start);
         set_conio_terminal_mode();
-        while((flag==true) && (times <30000) && !kbhit() )
+        srand(time(NULL));
+        while((flag==true) && (times <5000) && !kbhit() )
         {
            // reset_terminal_mode();
            cout<<"###########################"<< times <<"#################################"""<<endl;
@@ -92,27 +93,34 @@ int getch()
             int era=0;
             double delta=1000;
             accTraining=0;
-            for(int i=0 ;i<Es; i++)
-            {
-                double t=0.00001;
-                my_net->init(IN[i],outputs[i], t);
-                //cout<<"entrada:  "<< i << "   ****  era ***  "<<era<<endl;
-                my_net->forward();
-                delta=my_net->sumSquareError();
-                if(delta>0.000001)
-                    my_net->backpropagation();
-                //my_net->forward();
-                if(my_net->isCorrect()) accTraining++;
-                FinalErrors.push_back(delta);
-                era++;
-            }
+            int stk= 0;
+           // while(stk<01)
+           // {
+                //int i= rand()%Es;
+             //  cout<<"random  "<<i<<endl;
+                for(int i=0 ;i<Es; i++)
+                {
+                    double t=0.00001;
+                    my_net->init(IN[i],outputs[i], t);
+                    //cout<<"entrada:  "<< i << "   ****  era ***  "<<era<<endl;
+                    my_net->forward();
+                    delta=my_net->sumSquareError();
+                    if(delta>0.000001)
+                        my_net->backpropagationMomentum();
+                    //my_net->forward();
+                    if(my_net->isCorrect()) accTraining++;
+                    FinalErrors.push_back(delta);
+                    era++;
+                    stk++;
+                }
+            //}
             sum=0;
             for(int qw =0; qw<FinalErrors.size();qw++)
             {
                 sum+=FinalErrors[qw];
             }
             sum = sum / FinalErrors.size();
-            if(sum < 0.001)
+            if(sum < 0.00000001)
                 flag=false;
            cout<<"*********acumulado MENOR AL FLAG **** \n "<<sum<<endl;
            // setvbuf(stdout, (char *)NULL, _IOLBF, 0);
@@ -131,6 +139,7 @@ int getch()
         cout<<"%%%%%%%%%%%%%%%%%% TEST %%%%%%%%%%%%%%"<<endl;
         int Test =10;
         vector< vector<double >> I, O, NIT;
+        //my_net->loadDataNumbers("/home/mica/Desktop/TopIA/mnistdataset/mnist_test.csv", Test, NIT, O);
         my_net->loadDataNumbers("/home/mica/Desktop/TopIA/mnistdataset/mnist_test_10.csv", Test, NIT, O);
         //my_net->loadDataNumbers("../../mnist_test.csv", Test, NIT, O);
         //my_net->printMat("\n Entrada: \n", NIT);
