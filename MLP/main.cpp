@@ -64,7 +64,7 @@ int getch()
         srand (time(NULL));
         vector<int> hidden; hidden.push_back(100);
         //Network * my_net = new Network(3,4,8,3);
-        //g++ -std=c++11 network.h network.cpp neuron.h neuron.cpp layer.h layer.cpp main.cpp -O2 -I /home/amamani/unsa/eddy/armadillo-7.950.0/include -DARMA_DONT_USE_WRAPPER -lopenblas -llapack
+        //g++ -std=c++11 network.h network.cpp neuron.h neuron.cpp layer.h layer.cpp main.cpp -O3 -I /home/amamani/unsa/eddy/armadillo-7.950.0/include -DARMA_DONT_USE_WRAPPER -lopenblas -llapack
         Network * my_net = new Network(3,784,hidden,10);
         my_net->printVector("imprimiendo pesos", my_net->getVectorOrders());
         vector< vector<double >> inputs, outputs, IN;
@@ -74,6 +74,9 @@ int getch()
         //my_net->loadDataNumbers("../../mnist_train.csv", Es, IN, outputs);
         //my_net->printMat("emtrada",IN);
         vector<double> FinalErrors;
+        int tamBatch=50;
+        int batches=Es/tamBatch;
+        my_net->createVectDeltas(batches,785,101,11);
         int times=0;
         bool flag =true;
         double sum;
@@ -84,36 +87,34 @@ int getch()
         clock_gettime(CLOCK_MONOTONIC, &start);
         set_conio_terminal_mode();
         srand(time(NULL));
-        while((flag==true) && (times <3000) && !kbhit() )
+        while((flag==true) && (times <1200000) && !kbhit() )
         {
-           // reset_terminal_mode();
-           cout<<"###########################"<< times <<"#################################"""<<endl;
-           //fflush(stdout);
+            //cout<<"###########################"<< times <<"#################################"""<<endl;
             FinalErrors.clear();
             int era=0;
             double delta=1000;
             accTraining=0;
-            int stk= 0;
-           // while(stk<01)
-           // {
-                //int i= rand()%Es;
-             //  cout<<"random  "<<i<<endl;
-                for(int i=0 ;i<Es; i++)
-                {
-                    double t=0.00001;
-                    my_net->init(IN[i],outputs[i], t);
-                    //cout<<"entrada:  "<< i << "   ****  era ***  "<<era<<endl;
-                    my_net->forward();
-                    delta=my_net->sumSquareError();
-                    if(delta>0.000001)
-                        my_net->backpropagationMomentum();
-                    //my_net->forward();
-                    if(my_net->isCorrect()) accTraining++;
-                    FinalErrors.push_back(delta);
-                    era++;
-                    stk++;
-                }
-            //}
+            int inicio= (times*tamBatch)%Es;
+            int fin=inicio+tamBatch;
+            for(int i=inicio ;i<fin; i++)
+            {
+                double t=0.00001;
+                my_net->init(IN[i],outputs[i], t);
+                my_net->forward();
+                delta=my_net->sumSquareError();
+                //if(delta>0.000001)
+                my_net->backpropagationBatches();
+                //my_net->forward();
+                if(my_net->isCorrect()) accTraining++;
+                FinalErrors.push_back(delta);
+                era++;
+            }
+            //Actualizando los pesos
+            for(int i = 0 ; i< 3; i++)
+            {
+                my_net->vectDeltas[i]= my_net->vectDeltas[i]/batches;
+            }
+            my_net->bactchUpdate(my_net->vectDeltas);
             sum=0;
             for(int qw =0; qw<FinalErrors.size();qw++)
             {
@@ -122,19 +123,19 @@ int getch()
             sum = sum / FinalErrors.size();
             if(sum < 0.00000001)
                 flag=false;
-           cout<<"*********acumulado MENOR AL FLAG **** \n "<<sum<<endl;
-           // setvbuf(stdout, (char *)NULL, _IOLBF, 0);
-           reset_terminal_mode();
+            cout<<"*********acumulado MENOR AL FLAG **** \n "<<sum<<endl;
+            // setvbuf(stdout, (char *)NULL, _IOLBF, 0);
+            reset_terminal_mode();
             //cout<<"num de correctos entrenamiento    "<<accTraining<<endl;
             times++;
        }
-       (void)getch();
+        (void)getch();
         clock_gettime(CLOCK_MONOTONIC, &finish);
         elapsed = (finish.tv_sec - start.tv_sec);
         elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
         cout<<"tiempo de ejecucion "<<elapsed/60<<endl;
 
-	   cout<<"Acuraccy Trainig"<<accTraining<<endl;
+        cout<<"Acuraccy Trainig"<<accTraining<<endl;
         cout<<"*********acumulado MENOR AL FLAG **** \n "<<sum<<endl;
         cout<<"%%%%%%%%%%%%%%%%%% TEST %%%%%%%%%%%%%%"<<endl;
         int Test =10000;

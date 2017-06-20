@@ -282,10 +282,70 @@ void Network::backpropagation()
               // cout<<"\n EL nuevo error: \n "<<*E<<endl;
             }
         }
-
     }
 }
 
+void Network::backpropagationBatches()
+{
+    for(int i =numCapas-1; i>= 0;i--)
+    {
+        vector<Neuron *> * VN= vectLayer->at(i)->getVectNeuron();
+        if(i==numCapas-1)
+        {
+            mat * E = vectLayer->at(i)->getMatError();
+            for(int j =0 ;j < Y.size(); j++)
+            {
+                double a1= VN->at(j+1)->getVal();
+                E->at(j)=(Y[j]-a1)*a1*(1-a1);
+            }
+        }
+        else
+        {
+            mat * E = vectLayer->at(i+1)->getMatError();
+            mat * weight = vectLayer->at(i)->getMat();
+            //mat * X = vectNeurontoMatrix( vectLayer->at(i)->getVectNeuron());
+            //*(weight) += ratioL*trans(*X)*(*E);
+           // delete X;
+            if(i!=0)
+            {
+                mat * R = new mat((*E)*(trans(*weight)));
+                mat * D = derVectNeuron(VN);
+                mat * S  = new mat((*D)%(*R));
+                E=vectLayer->at(i)->getMatError();
+                for(int j = 0 ; j<E->n_cols ; j++)
+                    E->at(j)= S->at(j+1);
+                delete R;
+                vectDeltas[i]+= *S;
+                delete D;
+                delete S;
+            }
+        }
+    }
+}
+
+void Network::bactchUpdate(vector<mat> deltas)
+{
+    for(int i =numCapas-1; i>= 0;i--)
+    {
+        if(i!=numCapas-1)
+        {
+            mat * E = vectLayer->at(i+1)->getMatError();
+            mat * weight = vectLayer->at(i)->getMat();
+            mat * X = vectNeurontoMatrix( vectLayer->at(i)->getVectNeuron());
+            *(weight) += ratioL*trans(*X)*(*E);
+            delete X;
+        }
+    }
+
+}
+void Network::createVectDeltas(int tam,int a, int b, int c)
+{
+    //matError = new mat(1,size-1,fill::zeros);
+    vectDeltas.resize(tam);
+    vectDeltas[0] = mat(1,a-1,fill::zeros);
+    vectDeltas[1] = mat(1,b-1,fill::zeros);
+    vectDeltas[2] = mat(1,c-1,fill::zeros);
+}
 
 void  Network::backpropagationMomentum()
 {
@@ -315,7 +375,7 @@ void  Network::backpropagationMomentum()
                 //E->at(j)=(Y[j]-a1);
                // cout<<"Y"<<Y[j]<<endl;
             }
-            *E +=  0.1 * *(Fweights[i]);
+            *E +=  0.2 * *(Fweights[i]);
             *(Fweights[i])= *(E);
            // cout<<"\n primer error calculado \n "<<*E<<endl;
         }
@@ -344,7 +404,7 @@ void  Network::backpropagationMomentum()
                 mat * Der = derVectNeuron(VN);
               //  cout<<"D --\n"<< *D<<D<<endl;
                 mat * Delta  = new mat((*Der)%(*W));
-                *Delta +=  0.1 * *(Fweights[i]);
+                *Delta +=  0.2 * *(Fweights[i]);
                 *(Fweights[i])= *(Delta);
               // cout<<"S recortado -- \n"<< *S<<S<<endl;
                 E=vectLayer->at(i)->getMatError();
@@ -449,7 +509,7 @@ bool Network::testSet(vector<double>  I, vector<double> O)
     int correctos=0;
     for(int j =1; j< vectLayer->at(pos)->getVectNeuron()->size() ; j++)
     {
-        cout<<vectLayer->at(pos)->getVectNeuron()->at(j)->getVal()<<" ";
+        //cout<<vectLayer->at(pos)->getVectNeuron()->at(j)->getVal()<<" ";
         if(round((vectLayer->at(pos)->getVectNeuron()->at(j)->getVal()))== Y.at(j-1))
             correctos++;
     }

@@ -13,11 +13,13 @@ private:
     vector<int> vectOcultas;
     vector<double> VectOrders;
     vector<double> Y;
-    vector<mat* > Fweights;
+    vector<mat*> Fweights;
+
     //vector<vector<double> > Y;
     double threshold;
     double ratioL;
 public:
+    vector<mat> vectDeltas;
     Network();
     Network(int capas, int entradas, int ocultas,  int salida );
     Network(int capas, int entradas, vector<int> ocultas,  int salida );
@@ -32,6 +34,9 @@ public:
     void forward2();
     void backpropagation();
     void backpropagationMomentum();
+    void backpropagationBatches();
+    void bactchUpdate(vector<mat> deltas);
+    void createVectDeltas(int tam, int a , int b , int c);
     void createWeights();
     void printAll();
     vector<double> getVectorOrders();

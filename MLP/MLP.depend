@@ -40,7 +40,7 @@
 1497031949 source:/home/mica/Desktop/TopIA/MultilayerNeuralNetwok-armadillo/MLP/neuron.cpp
 	"neuron.h"
 
-1497768311 source:/home/mica/Desktop/TopIA/MultilayerNeuralNetwok-armadillo/MLP/main.cpp
+1497883707 source:/home/mica/Desktop/TopIA/MultilayerNeuralNetwok-armadillo/MLP/main.cpp
 	"network.h"
 	<armadillo>
 	<algorithm>
@@ -53,11 +53,11 @@
 	<sys/select.h>
 	<termios.h>
 
-1497279833 /home/mica/Desktop/TopIA/MultilayerNeuralNetwok-armadillo/MLP/network.h
+1497885629 /home/mica/Desktop/TopIA/MultilayerNeuralNetwok-armadillo/MLP/network.h
 	"layer.h"
 	<cmath>
 	<cstdio>
 
-1497769032 source:/home/mica/Desktop/TopIA/MultilayerNeuralNetwok-armadillo/MLP/network.cpp
+1497885463 source:/home/mica/Desktop/TopIA/MultilayerNeuralNetwok-armadillo/MLP/network.cpp
 	"network.h"
 
