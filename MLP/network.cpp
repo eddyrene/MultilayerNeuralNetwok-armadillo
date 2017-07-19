@@ -322,21 +322,21 @@ void Network::backpropagationBatches()
         }
     }
 }
-
 void Network::bactchUpdate(vector<mat> deltas)
 {
-    for(int i =numCapas-1; i>= 0;i--)
+    for(int i=numCapas-1; i>= 0;i--)
     {
-        if(i!=numCapas-1)
+        if(i != numCapas-1)
         {
-            mat * E = vectLayer->at(i+1)->getMatError();
+            cout<<"iii  :"<<i<<endl;
+            mat E = deltas[i+1];
             mat * weight = vectLayer->at(i)->getMat();
             mat * X = vectNeurontoMatrix( vectLayer->at(i)->getVectNeuron());
-            *(weight) += ratioL*trans(*X)*(*E);
+            *(weight) += ratioL*trans(*X)*(E);
+            cout<<"Hasta aqui llega"<<endl;
             delete X;
         }
     }
-
 }
 void Network::createVectDeltas(int tam,int a, int b, int c)
 {
@@ -347,7 +347,7 @@ void Network::createVectDeltas(int tam,int a, int b, int c)
     vectDeltas[2] = mat(1,c-1,fill::zeros);
 }
 
-void  Network::backpropagationMomentum()
+void  Network::backpropagationMomentum(double d)
 {
        // cout<<"\n \n backpropagation \n \n"<<endl;
     for(int i =numCapas-1; i>= 0;i--)
@@ -375,7 +375,7 @@ void  Network::backpropagationMomentum()
                 //E->at(j)=(Y[j]-a1);
                // cout<<"Y"<<Y[j]<<endl;
             }
-            *E +=  0.2 * *(Fweights[i]);
+            *E +=  d * *(Fweights[i]);
             *(Fweights[i])= *(E);
            // cout<<"\n primer error calculado \n "<<*E<<endl;
         }
@@ -387,13 +387,7 @@ void  Network::backpropagationMomentum()
             mat * weight = vectLayer->at(i)->getMat();
          //  cout<<"\n Los pesos actuales \n "<<*weight<<endl;
             mat * X = vectNeurontoMatrix( vectLayer->at(i)->getVectNeuron());
-        //   cout<<"\n Las neruronas actuales \n "<<*X<<endl;
-            //cout<<"X -- \n"<<(*X)<<" "<<trans(*X)<<" "<<X<<endl;
-            //cout<<"E -- \n"<<*E<<" "<<E<<endl;
-            //cout<<"W -- \n"<<*weight<<" "<<weight<<endl;
-            //int en=0;cin>>en;
-        //    cout<<"W --"<<i<<endl<<*(Fweights[i])<<endl<<endl;
-                *(weight) += ratioL*trans(*X)*(*E);
+            *(weight) += ratioL*trans(*X)*(*E);
                 delete X;
             //cout<<"\n Los nuevos pesos \n "<<*weight<<endl;
             if(i!=0)
@@ -404,7 +398,7 @@ void  Network::backpropagationMomentum()
                 mat * Der = derVectNeuron(VN);
               //  cout<<"D --\n"<< *D<<D<<endl;
                 mat * Delta  = new mat((*Der)%(*W));
-                *Delta +=  0.2 * *(Fweights[i]);
+                *Delta +=  d * *(Fweights[i]);
                 *(Fweights[i])= *(Delta);
               // cout<<"S recortado -- \n"<< *S<<S<<endl;
                 E=vectLayer->at(i)->getMatError();
@@ -567,7 +561,6 @@ void Network::loadDataNumbers(string name, int a, vector< vector<double >> &trai
                  n++;
              }
         }
-       // std::cout << "Line Finished" << std::endl;
      m++;
     }
     //my_net->printMat("\n Training: \n", inputs);
@@ -630,6 +623,7 @@ void Network::normalize(vector<vector<double> > &A, vector<vector<double> > B)
         //cout<<"max  "<< max <<"min  "<<min<<endl;
         for(int i=0;i<B.size();i++)
         {
+
             A[i][j]= (B[i][j]-min)/(max-min);
         }
     }

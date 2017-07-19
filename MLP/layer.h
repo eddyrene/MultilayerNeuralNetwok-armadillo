@@ -1,7 +1,6 @@
 #ifndef LAYER_H
 #define LAYER_H
 #include "neuron.h"
-//#include "weight.h"
 #include <vector>
 
 class Layer

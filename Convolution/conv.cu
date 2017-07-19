@@ -10,11 +10,9 @@ using namespace std;
 
 #define Mask_width  3
 #define Mask_radius Mask_width/2
-#define TILE_WIDTH 16
+#define TILE_WIDTH 32
 #define w (TILE_WIDTH + Mask_width - 1)
 #define clamp(x) (min(max((x), 0), 255))
-
-
 
 void fillMatrix(int* a, int n)
 {
@@ -109,48 +107,6 @@ void convolution(int *I, const int* __restrict__ M, int *P, int channels, int wi
       __syncthreads();
    }
 }
-/*
-#define P2D(PTR, PITCH, ROW, COL, TYPE)    ((TYPE *)( (char *)(PTR) + (ROW) * (PITCH) ) )[(COL)]
-
-__global__ void convolutionKernel(int *inImg, int *outImg, ROI size, int pitch, int *mask, size_t maskPitch, int maskSize, int maskSum)
-{
-    int row = blockDim.y * blockIdx.y + threadIdx.y;
-    int col = blockDim.x * blockIdx.x + threadIdx.x;
-
-    if (row > size.height || col > size.width)
-        return;
-
-    int k = maskSize / 2;
-    
-    int pixelNewValue = 0;
-    int p;
-    int m;
-
-    // Convolution
-    for (int i = -k; i <= k; i++)
-    {
-        for (int j = -k; j <= k; j++)
-        {
-            // Pixel
-            p = P2D(inImg, pitch, (row + i), (col + j), int);
-            
-            // Mask
-            m = P2D(mask, maskPitch, (i+k), (j+k), int);
-            
-            pixelNewValue += m * p;
-        }
-    }
-
-    // New value
-    pixelNewValue /= maskSum;
-    if (pixelNewValue < 0) pixelNewValue = 0;
-    else if (pixelNewValue > 255) pixelNewValue = 255;
- 
-    // Set value of pixel
-    P2D(outImg, pitch, row, col, int) = pixelNewValue;
-} 
-*/
-
 __global__ 
 void matrixAditionCol(int *c, int *a, int *b,int n) 
 {
@@ -278,8 +234,8 @@ void WritePPM(int * R, int* G,int *B, int fil , int cols, char *name)
     }
 }
 void print_vect(int *V, int n){
-    int i;
-    for (i = 0; i < n; i++)
+    int i
+;    for (i = 0; i < n; i++)
 		printf("%d ", V[i]);
 }
 int main(int argc, char *argv[])
@@ -291,7 +247,7 @@ int main(int argc, char *argv[])
 	int * order = ReadSizeImg("img.pgm");
 	int N=order[0]; int M=order[1];
 
-	int THREADS_PER_BLOCK = 16;
+	int THREADS_PER_BLOCK = 32;
 	int size =3*N*M*sizeof(int);
 
     cout<<"tamano Imagen "<<N<<" "<<M<<"  size "<<size<<endl;
@@ -300,37 +256,13 @@ int main(int argc, char *argv[])
 	int *d_k;
 
     cudaMalloc((void **)&d_R, size);
-	//cudaMalloc((void **)&d_G, size);
-	//cudaMalloc((void **)&d_B, size);
 	cudaMalloc((void **)&sd_R, size);
-	//cudaMalloc((void **)&sd_G, size);
-	//cudaMalloc((void **)&sd_B, size);
-	cudaMalloc((void **)&d_k,9*sizeof(int));
-
-   
+	cudaMalloc((void **)&d_k,9*sizeof(int));   
     R = (int *)malloc(size);
-   // G = (int *)malloc(size); 
-    //B = (int *)malloc(size);
     ReadPPM(R,"img.pgm");
-     cout<<"pasa"<<endl;
-       // ;printf("\n Impriendo R \n");
-    	//print_vect(R,order[0]*order[1]); printf("\nImpriendo B \n");
-    	//print_vect(G,order[0]*order[1]);printf("\nImpriendo G \n");
-    	//print_vect(B,order[0]*order[1]);
     sR = (int *)malloc(size); 
-   // sG = (int *)malloc(size); 
-    //sB = (int *)malloc(size); 
-
-	//for(int i=0;i<N*N;i++)
-	//	sR[i]=0;
-	//print_vect(sR,order[0]*order[1]);
 	cudaMemcpy(d_R, R, size, cudaMemcpyHostToDevice);
-    //cudaMemcpy(d_G, G, size, cudaMemcpyHostToDevice);
-	//cudaMemcpy(d_B, B, size, cudaMemcpyHostToDevice);
 	cudaMemcpy(d_k, k, 9*sizeof(int), cudaMemcpyHostToDevice);
-
-
-
 
 	int blocks= (N + THREADS_PER_BLOCK -1)/THREADS_PER_BLOCK;
 	dim3 dimGrid(blocks, blocks, 1);
@@ -338,22 +270,11 @@ int main(int argc, char *argv[])
 	
 	cout<<"blocks : \n"<<blocks<<"\n threds: \n "<<THREADS_PER_BLOCK<<endl; 
 	convolution<<<dimGrid,dimBlock>>>(d_R, d_k ,sd_R,1, N, M);
-    //convolution<<<dimGrid, dimBlock>>>(deviceInputImageData, deviceMaskData, deviceOutputImageData,imageChannels, imageWidth, imageHeight);
-
-      // convolution<<<dimGrid, dimBlock>>>(deviceInputImageData, deviceMaskData, deviceOutputImageData,
-                                   //   imageChannels, imageWidth, imageHeight);
-		//blurKernel<<<dimGrid,dimBlock>>>( d_Pout, d_Pin, N, M);
+  
 	cudaMemcpy(sR, sd_R, size, cudaMemcpyDeviceToHost);
-	//cudaMemcpy(sG, sd_G, size, cudaMemcpyDeviceToHost);
-	//cudaMemcpy(sB, sd_B, size, cudaMemcpyDeviceToHost);
-
-	//printf("\n Impriendo R \n");
-	//print_vect(sR,order[0]*order[1]); printf("\nImpriendo B \n");
-	//print_vect(sG,order[0]*order[1]);printf("\nImpriendo G \n");
-	//print_vect(sB,order[0]*order[1]);
-	//WritePPM(sR,sG,sB,N,M,"convLena.ppm");  
+	
     cout<<"ss"<<endl;
-	WritePPM(sR, N,M,"siete.ppm");  
+	WritePGM(sR, N,M,"siete.ppm");  
 	free(R); //free(G);free(B);
 	cudaFree(d_R); //cudaFree(d_B);cudaFree(d_G);
 	cudaFree(sd_R); //cudaFree(sd_B);cudaFree(sd_G);

@@ -2,7 +2,7 @@
 #include <iostream>
 using namespace std;
 
-#define Mask_width  3
+#define Mask_width 3
 #define Mask_radius Mask_width/2
 #define TILE_WIDTH 32
 #define w (TILE_WIDTH + Mask_width - 1)

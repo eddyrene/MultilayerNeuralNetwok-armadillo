@@ -33,7 +33,7 @@ public:
     void forward();
     void forward2();
     void backpropagation();
-    void backpropagationMomentum();
+    void backpropagationMomentum(double d);
     void backpropagationBatches();
     void bactchUpdate(vector<mat> deltas);
     void createVectDeltas(int tam, int a , int b , int c);

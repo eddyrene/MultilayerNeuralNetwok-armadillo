@@ -4,7 +4,6 @@ Layer::Layer()
 {
        vectNeuron = NULL;
 }
-
 Layer::Layer(int tam)
 {
     //pWeight= new Weight();
@@ -73,7 +72,6 @@ void Layer::binarizacion()
     cout<<"se binarizo"<<endl;
 }
 
-
 mat * Layer::getMat()
 {
     return pMat;
@@ -116,8 +114,6 @@ mat *Layer::getWeightBias()
 {
     return weightBias;
 }
-
-
 vector<Neuron *> *Layer::getVectNeuron()
 {
     return vectNeuron;
